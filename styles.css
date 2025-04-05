@@ -1,0 +1,540 @@
+/* Global styles and typography */
+:root {
+    --primary-blue: #4a90e2;
+    --primary-red: #ff4757;
+    --primary-yellow: #ffd700;
+    --primary-orange: #ff6b2b;
+    --light-blue: #67a7e9;
+    --text-dark: #333;
+    --text-muted: #666;
+    --bg-light: #f5f5f5;
+    --bg-white: #fdfdfd;
+    --border-color: #ddd;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+    --section-spacing: 16px;
+    --border-radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Layout and containers */
+.container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.container > div {
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Typography */
+h1 {
+    color: var(--text-dark);
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+}
+
+/* Form elements */
+textarea {
+    width: 100%;
+    height: 100px;
+    min-height: 80px;
+    padding: 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    resize: vertical;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.5;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    caret-color: var(--primary-blue);
+}
+
+textarea:hover {
+    border-color: #b3b3b3;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* Fix caret appearing in read-only areas */
+body:not(:focus-within) textarea {
+    caret-color: transparent;
+}
+
+textarea:focus {
+    caret-color: var(--primary-blue);
+}
+
+/* Mode selection */
+.mode-selection {
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.radio-group {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+}
+
+.radio-group:last-child {
+    margin-bottom: 0;
+}
+
+.radio-group label,
+.checkbox-group label {
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group {
+    margin: 12px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+}
+
+.checkbox-group label {
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* Radio and checkbox inputs */
+.radio-group input[type="radio"],
+.checkbox-group input[type="checkbox"] {
+    margin: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.radio-group input[type="radio"]:checked {
+    border-color: var(--primary-blue);
+    background-color: var(--primary-blue);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.radio-group input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #fff;
+}
+
+.checkbox-group input[type="checkbox"] {
+    border-radius: 6px;
+}
+
+.checkbox-group input[type="checkbox"]:disabled {
+    background-color: var(--bg-light);
+    border-color: var(--border-color);
+    cursor: not-allowed;
+}
+
+.checkbox-group input[type="checkbox"]:disabled + label {
+    cursor: not-allowed;
+}
+
+/* Savage Mode label */
+.checkbox-group label span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.checkbox-group label img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/* Buttons */
+.button-container {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+#roastButton {
+    background-color: var(--primary-red);
+    color: var(--bg-white);
+    width: 100%;
+    margin: 0;
+}
+
+#unlockButton {
+    background-color: var(--primary-yellow);
+    color: var(--text-dark);
+    width: 100%;
+    margin: 0;
+}
+
+#roastButton:hover {
+    background-color: #ff6b81;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+#unlockButton:hover {
+    background-color: #ffed4a;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Output area */
+#roastOutput {
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin: 0;
+    min-height: 100px;
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-md);
+    font-size: 16px;
+    line-height: 1.5;
+    display: none; /* Hide initially */
+}
+
+#roastOutput.visible {
+    display: block;
+    margin-top: 16px;
+}
+
+#roastOutput p {
+    margin-bottom: 16px;
+}
+
+#roastOutput p:last-child {
+    margin-bottom: 0;
+}
+
+/* Roast sections */
+#roastOutput h2 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 24px 0 12px;
+    color: var(--text-dark);
+}
+
+#roastOutput h2:first-child {
+    margin-top: 0;
+}
+
+#roastOutput br + br {
+    content: "";
+    display: block;
+    margin: 16px 0;
+}
+
+/* Section headers */
+.section-header,
+#roastOutput h2,
+#roastOutput h3 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    margin: 32px 0 16px;
+    color: var(--text-dark);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+#roastOutput h2:first-child,
+#roastOutput h3:first-child,
+.section-header:first-child {
+    margin-top: 0;
+}
+
+/* Savage mode specific styles */
+.savage-section {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.savage-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.savage-header {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 32px 0 16px;
+    color: var(--text-dark);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.savage-header:first-child {
+    margin-top: 0;
+}
+
+/* Emoji styling */
+.emoji {
+    font-size: 1.2em;
+    vertical-align: middle;
+    margin: 0 2px;
+}
+
+/* Support link */
+.support-link {
+    text-align: center;
+    margin: 8px 0 0;
+}
+
+.support-link a {
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    background-color: #f0f0f0;
+}
+
+.support-link a:hover {
+    color: var(--text-dark);
+    background-color: #e5e5e5;
+    transform: translateY(-1px);
+}
+
+/* Upload buttons */
+.upload-buttons {
+    margin-bottom: 16px;
+}
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background-color: var(--primary-blue);
+    color: var(--bg-white);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.upload-btn.full-width {
+    width: 100%;
+}
+
+.upload-btn:hover {
+    background-color: #357abd;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Focus management */
+.radio-group input[type="radio"],
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+}
+
+.radio-group label:focus,
+.checkbox-group label:focus,
+.upload-btn:focus {
+    outline: none;
+}
+
+textarea:focus-visible,
+button:focus-visible,
+.upload-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+/* Hide file inputs */
+input[type="file"] {
+    display: none;
+}
+
+/* Savage Mode Styles */
+.savage-counter {
+    font-size: 14px;
+    color: var(--primary-orange);
+    margin-left: 8px;
+}
+
+#savageMode:disabled + label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.unlock-button {
+    background: linear-gradient(45deg, var(--primary-orange), var(--primary-yellow));
+    color: var(--text-dark);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.unlock-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 43, 0.2);
+}
+
+.unlock-button:active {
+    transform: translateY(0);
+}
+
+/* Ensure radio buttons and other elements don't trigger text selection */
+.radio-group,
+.checkbox-group,
+.mode-selection,
+.button-container {
+    user-select: none;
+}
+
+/* Rewrite button */
+.rewrite-button {
+    background-color: var(--light-blue);
+    color: var(--bg-white);
+    width: 100%;
+    margin: 0;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.rewrite-button:hover:not(:disabled) {
+    background-color: var(--primary-blue);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.rewrite-button:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.lock-icon {
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--text-dark);
+    color: var(--bg-white);
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.toast.visible {
+    opacity: 1;
+}
+
+.savage-label {
+    color: var(--primary-red) !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(45deg, #ff4757, #ff6b2b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(255, 71, 87, 0.1);
+} 

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Roaster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1>Resume Roaster 🔥</h1>
+            
+            <div class="upload-buttons">
+                <label class="upload-btn full-width">
+                    <input type="file" id="pdfUpload" accept=".pdf">
+                    📄 Upload PDF Resume
+                </label>
+            </div>
+            
+            <textarea id="resumeInput" placeholder="Paste your resume text here..."></textarea>
+            
+            <div class="mode-selection">
+                <div class="radio-group">
+                    <input type="radio" id="normalMode" name="roastMode" value="normal" checked>
+                    <label for="normalMode">Normal</label>
+                </div>
+                
+                <div class="radio-group">
+                    <input type="radio" id="genZMode" name="roastMode" value="genz">
+                    <label for="genZMode">Gen Z</label>
+                </div>
+                
+                <div class="radio-group">
+                    <input type="radio" id="savageMode" name="roastMode" value="savage">
+                    <label for="savageMode" class="savage-label">SAVAGE MODE <span class="savage-counter"></span></label>
+                </div>
+            </div>
+
+            <div id="roastOutput"></div>
+            <div id="rewriteOutput"></div>
+            
+            <div class="button-container">
+                <button id="roastButton">Roast Me</button>
+                <button id="rewriteButton" class="rewrite-button">
+                    Rewrite My Resume
+                </button>
+                <div class="support-link">
+                    <a href="https://buymeacoffee.com/no1nereal" target="_blank">☕ Support Us!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="roaster.js"></script>
+</body>
+</html> 
