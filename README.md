@@ -49,7 +49,7 @@ you can support me here: [buy me a coffee](https://www.buymeacoffee.com/no1nerea
 
 ## 🔗 live demo
 
-🟢 [check out the hosted version here](https://resume-roaster-eta.vercel.app/)
+🟢 [check out the hosted version here](https://resume-roaster-kizt.onrender.com/)
 
 ---
 
