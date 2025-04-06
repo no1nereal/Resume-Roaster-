@@ -1,66 +1,47 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import fetch from 'node-fetch';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+// Validate required environment variables
+if (!process.env.OPENAI_API_KEY) {
+    console.error('❌ OPENAI_API_KEY is required but not set in environment variables');
+    process.exit(1);
+}
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 3000;
-
-// Rate limiting middleware - 20 requests per 15 minutes
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 20, // 20 requests per window
-    message: { error: 'Too many requests. Please try again in 15 minutes.' },
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false // Disable the `X-RateLimit-*` headers
-});
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-// Increase payload limit and add error handling
 app.use(express.json({
-    limit: '50mb',
-    verify: (req, res, buf) => {
-        try {
-            JSON.parse(buf);
-        } catch(e) {
-            res.status(400).json({ error: 'Invalid JSON payload' });
-            throw new Error('Invalid JSON');
-        }
-    }
+    limit: '1mb' // Limit payload size
 }));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static('public'));
 
-// Apply rate limiting to the API endpoint
-app.use('/api/roast', limiter);
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
 
-// OpenAI API proxy endpoint
+// API Routes
 app.post('/api/roast', async (req, res) => {
     try {
-        // Validate request body
-        if (!req.body || !req.body.messages) {
-            throw new Error('Invalid request format');
+        const body = req.body;
+
+        if (!body?.messages || !Array.isArray(body.messages)) {
+            return res.status(400).json({
+                error: 'Invalid request: messages array is required'
+            });
         }
-
-        // Check if this is a vision request (has image content)
-        const isVisionRequest = req.body.messages?.some(msg => 
-            msg.content?.some?.(content => content.type === 'image_url')
-        );
-
-        const model = isVisionRequest ? 'gpt-4-vision-preview' : 'gpt-4';
-        const maxTokens = isVisionRequest ? 1000 : 500;
-
-        console.log('Processing request with model:', model);
-        if (isVisionRequest) {
-            console.log('Vision request detected');
-        }
-
-        const openAIRequest = {
-            ...req.body,
-            model: model,
-            max_tokens: maxTokens
-        };
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -68,26 +49,47 @@ app.post('/api/roast', async (req, res) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             },
-            body: JSON.stringify(openAIRequest)
+            body: JSON.stringify({
+                model: 'gpt-4',
+                messages: body.messages,
+                temperature: body.temperature || 0.7,
+                max_tokens: body.max_tokens || 500
+            })
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            const error = await response.json();
-            console.error('OpenAI API Error:', error);
-            throw new Error(error.error?.message || `API request failed with status ${response.status}`);
+            console.error('OpenAI API Error:', data);
+            return res.status(response.status).json({
+                error: data.error?.message || 'OpenAI API request failed'
+            });
         }
 
-        const data = await response.json();
-        res.json(data);
+        return res.status(200).json(data);
     } catch (error) {
         console.error('Server Error:', error);
-        res.status(error.status || 500).json({ 
-            error: 'Failed to process request: ' + error.message,
-            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+// Catch-all route to serve the frontend
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Unhandled Error:', err);
+    res.status(500).json({
+        error: 'Internal server error'
+    });
+});
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`✅ Server is running on port ${PORT}`);
+    console.log(`💡 Environment: ${process.env.NODE_ENV || 'development'}`);
 }); 
