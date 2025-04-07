@@ -479,7 +479,8 @@ const elements = {
     roastOutput: document.getElementById('roastOutput'),
     rewriteOutput: document.getElementById('rewriteOutput'),
     pdfUpload: document.getElementById('pdfUpload'),
-    modeSelector: document.querySelector('input[name="roastMode"]:checked')
+    modeSelector: document.querySelector('input[name="roastMode"]:checked'),
+    rewriteButton: document.getElementById('rewriteButton')
 };
 
 // Loading state handler
@@ -504,147 +505,120 @@ function setLoading(isLoading, button = elements.roastButton) {
     }
 }
 
-// Event handler for PDF upload
-elements.pdfUpload.addEventListener('change', async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        setLoading(true);
-        try {
-            const text = await extractTextFromPDF(file);
-            elements.resumeInput.value = text;
-        } catch (error) {
-            elements.roastOutput.textContent = `😬 Oops! ${error.message}`;
-            console.error('PDF processing error:', error);
-        } finally {
-            setLoading(false);
-        }
-    }
-});
-
-// Helper function to detect resume sections
-function detectResumeSections(text) {
-    const sections = {};
-    for (const [section, pattern] of Object.entries(SECTION_PATTERNS)) {
-        sections[section] = pattern.test(text);
-    }
-    return sections;
-}
-
-// Event handler for the roast button
-elements.roastButton.addEventListener('click', async () => {
-    const resumeText = elements.resumeInput.value.trim();
-    const mode = document.querySelector('input[name="roastMode"]:checked').value;
-    
-    // Clear rewrite output when roasting
-    elements.rewriteOutput.innerHTML = '';
-    
-    // Input validation
-    if (!resumeText) {
-        elements.roastOutput.innerHTML = `<p style="color: var(--text-muted);">Please enter some text to get roasted! 🔥</p>`;
-        elements.roastOutput.classList.add('visible');
-        return;
-    }
-
-    // Generate roast
-    setLoading(true);
-    try {
-        const roast = await generateRoast(resumeText, mode);
-        const formattedRoast = formatRoastOutput(roast, mode);
-        
-        elements.roastOutput.innerHTML = `
-            <div class="roast-card" data-mode="${mode}">
-                ${formattedRoast}
-            </div>`;
-        elements.roastOutput.classList.add('visible');
-    } catch (error) {
-        elements.roastOutput.innerHTML = `<p style="color: var(--primary-red);">😬 Oops! ${error.message}</p>`;
-        elements.roastOutput.classList.add('visible');
-        console.error('Roast generation error:', error);
-    } finally {
-        setLoading(false);
-    }
-});
-
-// Function to handle savage mode unlock
-async function unlockSavageMode() {
-    try {
-        // Here you would integrate with your payment processing system
-        // For now, we'll simulate a successful payment
-        const success = true; // Replace with actual payment processing
-
-        if (success) {
-            isSavageModeUnlocked = true;
-            savageModeUsesLeft = CONFIG.SAVAGE_MODE_USES;
-            document.getElementById('savageMode').disabled = false;
-            updateSavageModeCounter();
-            alert('🔥 Savage Mode unlocked! You have ' + CONFIG.SAVAGE_MODE_USES + ' roasts available.');
-        }
-    } catch (error) {
-        console.error('Payment failed:', error);
-        alert('Payment failed. Please try again.');
-    }
-}
-
-// Function to update the savage mode counter in UI
-function updateSavageModeCounter() {
-    const counter = document.querySelector('.savage-counter');
-    if (counter) {
-        counter.textContent = `(${savageModeUsesLeft} left)`;
-    }
-}
-
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // ... existing event listeners ...
+    // Initialize elements after DOM is loaded
+    Object.assign(elements, {
+        resumeInput: document.getElementById('resumeInput'),
+        roastButton: document.getElementById('roastButton'),
+        roastOutput: document.getElementById('roastOutput'),
+        rewriteOutput: document.getElementById('rewriteOutput'),
+        pdfUpload: document.getElementById('pdfUpload'),
+        modeSelector: document.querySelector('input[name="roastMode"]:checked'),
+        rewriteButton: document.getElementById('rewriteButton')
+    });
 
-    // Add unlock button listener
-    const unlockButton = document.getElementById('unlockButton');
-    unlockButton.addEventListener('click', unlockSavageMode);
+    // Add PDF upload listener
+    elements.pdfUpload.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setLoading(true);
+            try {
+                const text = await extractTextFromPDF(file);
+                elements.resumeInput.value = text;
+            } catch (error) {
+                elements.roastOutput.textContent = `😬 Oops! ${error.message}`;
+                console.error('PDF processing error:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+    });
 
-    // Add savage mode radio listener
-    const savageMode = document.getElementById('savageMode');
-    savageMode.addEventListener('change', (e) => {
-        if (e.target.checked && !isSavageModeUnlocked) {
-            e.target.checked = false;
-            alert('Please unlock Savage Mode first!');
+    // Add roast button listener
+    elements.roastButton.addEventListener('click', async () => {
+        const resumeText = elements.resumeInput.value.trim();
+        const mode = document.querySelector('input[name="roastMode"]:checked').value;
+        
+        // Clear rewrite output when roasting
+        elements.rewriteOutput.innerHTML = '';
+        
+        // Input validation
+        if (!resumeText) {
+            elements.roastOutput.innerHTML = `<p style="color: var(--text-muted);">Please enter some text to get roasted! 🔥</p>`;
+            elements.roastOutput.classList.add('visible');
+            return;
+        }
+
+        // Generate roast
+        setLoading(true);
+        try {
+            const roast = await generateRoast(resumeText, mode);
+            const formattedRoast = formatRoastOutput(roast, mode);
+            
+            elements.roastOutput.innerHTML = `
+                <div class="roast-card" data-mode="${mode}">
+                    ${formattedRoast}
+                </div>`;
+            elements.roastOutput.classList.add('visible');
+        } catch (error) {
+            elements.roastOutput.innerHTML = `<p style="color: var(--primary-red);">😬 Oops! ${error.message}</p>`;
+            elements.roastOutput.classList.add('visible');
+            console.error('Roast generation error:', error);
+        } finally {
+            setLoading(false);
         }
     });
 
     // Add rewrite button listener
-    const rewriteButton = document.getElementById('rewriteButton');
-    rewriteButton.disabled = false; // Enable button by default for testing
-    rewriteButton.addEventListener('click', async () => {
-        if (!isRewriteModeUnlocked) {
-            unlockRewriteMode();
-            return;
-        }
+    if (elements.rewriteButton) {
+        elements.rewriteButton.addEventListener('click', async () => {
+            const resumeText = elements.resumeInput.value.trim();
+            const resultDiv = elements.rewriteOutput;
+            
+            if (!resumeText) {
+                resultDiv.innerHTML = `<p style="color: var(--text-muted);">Please enter some text to rewrite! ✍️</p>`;
+                resultDiv.classList.add('visible');
+                return;
+            }
 
-        const resumeText = elements.resumeInput.value.trim();
-        
-        // Input validation
-        if (!resumeText) {
-            elements.rewriteOutput.innerHTML = `<p style="color: var(--text-muted);">Please enter some text to rewrite! ✍️</p>`;
-            elements.rewriteOutput.classList.add('visible');
-            return;
-        }
+            // Generate rewrite
+            setLoading(true, elements.rewriteButton);
+            try {
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: "system", content: PROMPTS.rewrite },
+                            { role: "user", content: resumeText }
+                        ],
+                        temperature: 0.5,
+                        max_tokens: 1000
+                    })
+                });
 
-        // Generate rewrite
-        setLoading(true, rewriteButton);
-        try {
-            const rewrite = await generateRewrite(resumeText);
-            elements.rewriteOutput.innerHTML = `
-                <div class="rewritten-resume">
-                    ${rewrite}
-                </div>`;
-            elements.rewriteOutput.classList.add('visible');
-        } catch (error) {
-            elements.rewriteOutput.innerHTML = `<p style="color: var(--primary-red);">😬 Oops! ${error.message}</p>`;
-            elements.rewriteOutput.classList.add('visible');
-            console.error('Rewrite generation error:', error);
-        } finally {
-            setLoading(false, rewriteButton);
-        }
-    });
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to rewrite resume');
+                }
+
+                const data = await response.json();
+                const rewrite = data.choices[0].message.content.trim();
+                
+                resultDiv.innerHTML = formatRewrittenResume(rewrite);
+                resultDiv.classList.add('visible');
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: var(--primary-red);">😬 Oops! ${error.message}</p>`;
+                resultDiv.classList.add('visible');
+                console.error('Rewrite generation error:', error);
+            } finally {
+                setLoading(false, elements.rewriteButton);
+            }
+        });
+    }
 
     // Initialize savage mode state
     updateSavageModeCounter();
