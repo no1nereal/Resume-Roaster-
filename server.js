@@ -36,13 +36,13 @@ app.get('/health', (req, res) => {
 app.post('/api/roast', async (req, res) => {
     try {
         const body = req.body;
-
+        
         if (!body?.messages || !Array.isArray(body.messages)) {
             return res.status(400).json({
                 error: 'Invalid request: messages array is required'
             });
         }
-
+        
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
