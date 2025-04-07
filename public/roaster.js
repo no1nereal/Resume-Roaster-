@@ -1,14 +1,10 @@
 // Configuration
 const CONFIG = {
     API_URL: '/api/roast', // Changed to use backend proxy
-    MODEL: 'gpt-4',
-    SAVAGE_MODE_USES: 25, // Maximum number of savage mode uses
-    REWRITE_MODE_USES: 10 // Maximum number of rewrite uses
+    MODEL: 'gpt-4'
 };
 
 // User state
-let savageModeUsesLeft = CONFIG.SAVAGE_MODE_USES;
-let rewriteUsesLeft = CONFIG.REWRITE_MODE_USES;
 let isSavageModeUnlocked = true;
 let isRewriteModeUnlocked = true;
 
@@ -345,16 +341,10 @@ async function generateRewrite(resumeText) {
     if (!isRewriteModeUnlocked) {
         throw new Error('Rewrite mode is locked. Please unlock it first!');
     }
-    if (rewriteUsesLeft <= 0) {
-        throw new Error('No more rewrites left. Please purchase more!');
-    }
 
     if (resumeText.length < 10) {
         throw new Error('Resume text is too short.');
     }
-
-    rewriteUsesLeft--;
-    updateRewriteCounter();
 
     const messages = [
         {
@@ -401,16 +391,7 @@ async function generateRewrite(resumeText) {
 async function unlockRewriteMode() {
     // TODO: Replace this with real payment integration later
     isRewriteModeUnlocked = true;
-    rewriteUsesLeft = CONFIG.REWRITE_MODE_USES;
-    document.getElementById('rewriteButton').disabled = false;
-    updateRewriteCounter();
     showToast('✨ Rewrite unlocked! You have 10 uses.');
-}
-
-// Function to update the rewrite counter in UI
-function updateRewriteCounter() {
-    const rewriteButton = document.getElementById('rewriteButton');
-    rewriteButton.innerHTML = `Rewrite My Resume (${rewriteUsesLeft} left)`;
 }
 
 // Update generateRoast function
@@ -426,11 +407,6 @@ async function generateRoast(resumeText, mode) {
         if (!isSavageModeUnlocked) {
             throw new Error('Savage mode is locked. Please unlock it first!');
         }
-        if (savageModeUsesLeft <= 0) {
-            throw new Error('No more savage mode uses left. Please purchase more!');
-        }
-        savageModeUsesLeft--;
-        updateSavageModeCounter();
     }
 
     const messages = [
@@ -500,7 +476,7 @@ function setLoading(isLoading, button = elements.roastButton) {
         if (button === elements.roastButton) {
             button.innerHTML = 'Roast Me';
         } else {
-            updateRewriteCounter(); // This will set the correct text for rewrite button
+            button.innerHTML = 'Rewrite My Resume';
         }
     }
 }
@@ -608,7 +584,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 const rewrite = data.choices[0].message.content.trim();
                 
-                resultDiv.innerHTML = formatRewrittenResume(rewrite);
+                resultDiv.innerHTML = `
+                    <div class="roast-card">
+                        ${formatRewrittenResume(rewrite)}
+                    </div>`;
                 resultDiv.classList.add('visible');
             } catch (error) {
                 resultDiv.innerHTML = `<p style="color: var(--primary-red);">😬 Oops! ${error.message}</p>`;
@@ -619,12 +598,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // Initialize savage mode state
-    updateSavageModeCounter();
-
-    // Initialize rewrite mode state
-    updateRewriteCounter();
 
     // Add CSS styles for the outputs
     const style = document.createElement('style');
